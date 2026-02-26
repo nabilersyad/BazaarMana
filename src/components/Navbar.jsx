@@ -17,7 +17,8 @@ export default function Navbar() {
 
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2">
-          <span className="text-gold text-xl">☽</span>
+          {/* <span className="text-gold text-xl">☽</span> - maybe add a moon icon later?*/}
+          <img src="BazaarManaLogo.svg" alt="BazaarMana" className="h-10 w-10" />
           <span className="font-display font-bold text-lg leading-tight">BazaarMana</span>
         </Link>
 
