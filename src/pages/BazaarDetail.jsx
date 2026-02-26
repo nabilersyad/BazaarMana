@@ -251,7 +251,7 @@ export default function BazaarDetail() {
 
       {/* Transit */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
-        <h2 className="font-display font-bold text-lg mb-4">Transit Access</h2>
+        <h2 className="font-display font-bold text-lg mb-4">Nearby Train Stations</h2>
         <TransitInfo lat={bazaar.lat} lng={bazaar.lng} />
       </div>
 

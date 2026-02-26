@@ -54,7 +54,7 @@ export default function SearchFilter({ bazaars, onFilter }) {
           onChange={e => setArea(e.target.value)}
           className="flex-1 py-2 px-3 text-sm text-gray-600 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest bg-white"
         >
-          <option value="">All Areas</option>
+          <option value="">All Neighbourhoods</option>
           {areas.map(a => <option key={a} value={a}>{a}</option>)}
         </select>
 
@@ -63,7 +63,7 @@ export default function SearchFilter({ bazaars, onFilter }) {
           onChange={e => setParliament(e.target.value)}
           className="flex-1 py-2 px-3 text-sm text-gray-600 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest bg-white"
         >
-          <option value="">All Parlimens</option>
+          <option value="">All Areas</option>
           {parliaments.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
       </div>

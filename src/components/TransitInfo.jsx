@@ -3,7 +3,7 @@ import { transitSupabase } from '../lib/transitSupabase'
 
 function walkLabel(seconds) {
   const mins = Math.round(seconds / 60)
-  return `${mins} min walk`
+  return `Less than ${mins} min walk`
 }
 
 export default function TransitInfo({ lat, lng }) {
