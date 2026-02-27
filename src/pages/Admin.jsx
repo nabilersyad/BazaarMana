@@ -31,12 +31,13 @@ export default function Admin() {
     }
   }
 
-  const fetchPending = async () => {
+const fetchPending = async () => {
     setLoading(true)
     const { data } = await supabase
       .from('bazaars')
       .select('*')
       .eq('is_verified', false)
+      .eq('is_active', true)
       .order('created_at', { ascending: false })
     setBazaars(data || [])
     setLoading(false)

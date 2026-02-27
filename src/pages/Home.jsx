@@ -49,7 +49,7 @@ export default function Home() {
 
       {/* Header */}
       <div className="bg-forest text-white py-3 px-4 text-center shrink-0">
-        <h1 className="font-display text-lg font-bold">Ramadan Bazaar 2026</h1>
+        <h1 className="font-display text-lg font-bold">Ramadan Bazaars 2026</h1>
         <p className="text-green-200 text-xs mt-0.5">
           Kuala Lumpur — {bazaars.length} verified bazaars
         </p>

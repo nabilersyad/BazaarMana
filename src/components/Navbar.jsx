@@ -7,8 +7,8 @@ export default function Navbar() {
 
   const links = [
     { to: '/', label: 'Map' },
-    { to: '/submit', label: 'Submit a Bazaar' },
-    { to: '/admin', label: 'Admin' },
+    //{ to: '/submit', label: 'Submit a Bazaar' },
+    //{ to: '/admin', label: 'Admin' },
   ]
 
   return (

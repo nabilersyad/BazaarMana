@@ -51,7 +51,7 @@ export default function SubmitBazaar() {
     setLoading(true)
     setError(null)
 
-    if (!form.name || !form.address || !form.lat || !form.lng) {
+    if (!form.name || !form.address || !form.area || !form.lat || !form.lng) {
       setError('Please fill in all required fields.')
       setLoading(false)
       return
@@ -60,7 +60,7 @@ export default function SubmitBazaar() {
     const { error } = await supabase.from('bazaars').insert({
       name: form.name,
       address: form.address,
-      area: form.area || null,
+      area: form.area || '',
       state: form.state,
       lat: parseFloat(form.lat),
       lng: parseFloat(form.lng),
@@ -143,15 +143,16 @@ export default function SubmitBazaar() {
             </Field>
 
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Area">
-                <input
-                  type="text"
-                  value={form.area}
-                  onChange={e => set('area', e.target.value)}
-                  placeholder="e.g. TTDI"
-                  className={inputClass}
-                />
-              </Field>
+            <Field label="Neighbourhood" required>
+              <input
+                type="text"
+                value={form.area}
+                onChange={e => set('area', e.target.value)}
+                placeholder="e.g. TTDI"
+                className={inputClass}
+                required
+              />
+            </Field>
               <Field label="State">
                 <select
                   value={form.state}
