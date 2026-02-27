@@ -229,7 +229,7 @@ export default function BazaarDetail() {
             Apple Maps
           </a>
           
-          <a href={`https://omaps.app/map?ll=${bazaar.lat},${bazaar.lng}&n=${encodeURIComponent(bazaar.name)}`}
+         <a href={`https://www.openstreetmap.org/?mlat=${bazaar.lat}&mlon=${bazaar.lng}&zoom=17`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-green-700 text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-green-900 transition-colors"
@@ -237,7 +237,7 @@ export default function BazaarDetail() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
             </svg>
-            Organic Maps
+            OpenStreetMap
           </a>
         </div>
       </div>
