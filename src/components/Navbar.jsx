@@ -39,9 +39,17 @@ export default function Navbar() {
         <a href="https://github.com/nabilersyad"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-green-300 hover:text-gold transition-colors"
+          className="text-[11px] text-green-300 hover:text-gold transition-colors"
         >
           by nabilersyad
+        </a>
+        
+        <a href="https://buymeacoffee.com/nabilersyad"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[11px] bg-gold text-white font-semibold px-2 py-1 rounded-md hover:bg-yellow-600 transition-colors"
+        >
+          ☕ Buy me a coffee
         </a>
       </div>
 
