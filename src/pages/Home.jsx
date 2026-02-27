@@ -37,7 +37,8 @@ export default function Home() {
     return (
       <div className="flex items-center justify-center h-[80vh]">
         <div className="text-center">
-          <div className="text-4xl mb-3 animate-pulse">☽</div>
+          <img src="/BazaarManaLogo.svg" alt="BazaarMana" className="h-12 w-12 mx-auto mb-3 animate-pulse" />
+          {/*<div className="text-4xl mb-3 animate-pulse">☽</div>*/}
           <p className="text-sm text-gray-400">Loading bazaars...</p>
         </div>
       </div>
