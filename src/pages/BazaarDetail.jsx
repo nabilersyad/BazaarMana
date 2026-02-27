@@ -205,9 +205,9 @@ export default function BazaarDetail() {
           {bazaar.organiser && <InfoRow icon="👥" label="Organiser" value={bazaar.organiser} />}
         </div>
 
-        <div className="px-5 pb-5 flex gap-2">
+        <div className="px-5 pb-5 flex gap-2 flex-wrap">
           
-            <a href={`https://www.google.com/maps?q=${bazaar.lat},${bazaar.lng}`}
+          <a href={`https://www.google.com/maps?q=${bazaar.lat},${bazaar.lng}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-gold text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-yellow-600 transition-colors"
@@ -218,7 +218,7 @@ export default function BazaarDetail() {
             Google Maps
           </a>
           
-            <a href={`https://maps.apple.com/?q=${bazaar.lat},${bazaar.lng}`}
+          <a href={`https://maps.apple.com/?q=${bazaar.lat},${bazaar.lng}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-gray-800 text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-gray-900 transition-colors"
@@ -227,6 +227,17 @@ export default function BazaarDetail() {
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
             </svg>
             Apple Maps
+          </a>
+          
+          <a href={`https://omaps.app/map?ll=${bazaar.lat},${bazaar.lng}&n=${encodeURIComponent(bazaar.name)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-green-700 text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-green-900 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+            Organic Maps
           </a>
         </div>
       </div>

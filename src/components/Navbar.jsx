@@ -23,19 +23,27 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-6">
-          {links.map(link => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={`text-sm font-medium transition-colors hover:text-gold ${
-                pathname === link.to ? 'text-gold' : 'text-green-100'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
+      <div className="hidden md:flex items-center gap-6">
+        {links.map(link => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className={`text-sm font-medium transition-colors hover:text-gold ${
+              pathname === link.to ? 'text-gold' : 'text-green-100'
+            }`}
+          >
+            {link.label}
+          </Link>
+        ))}
+        
+        <a href="https://github.com/nabilersyad"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-green-300 hover:text-gold transition-colors"
+        >
+          by nabilersyad
+        </a>
+      </div>
 
         {/* Mobile hamburger */}
         <button

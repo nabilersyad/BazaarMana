@@ -61,7 +61,13 @@ export default function BazaarMap({ bazaars, selected, onSelect }) {
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://hot.openstreetmap.org">HOT</a>'
-        url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png" // HOT style, shows building footprints and more details
+        //url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" // Default OSM style, cleaner and faster loading
+        //url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        //url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        //url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        //url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+        //url="https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
       />
 
       <FlyToSelected selected={selected} />
