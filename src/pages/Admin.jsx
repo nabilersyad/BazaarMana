@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
-
 function Meta({ label, value }) {
   if (!value) return null
   return (
@@ -14,24 +12,47 @@ function Meta({ label, value }) {
 }
 
 export default function Admin() {
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem('admin_authed') === '1')
+  const [session, setSession] = useState(null)
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [pwError, setPwError] = useState(false)
+  const [loginError, setLoginError] = useState('')
+  const [loginLoading, setLoginLoading] = useState(false)
   const [bazaars, setBazaars] = useState([])
   const [loading, setLoading] = useState(false)
   const [actionLoading, setActionLoading] = useState(null)
 
-  const login = (e) => {
+  // Check for existing session on mount
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Fetch pending bazaars when session is available
+  useEffect(() => {
+    if (session) fetchPending()
+  }, [session])
+
+  const login = async (e) => {
     e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem('admin_authed', '1')
-      setAuthed(true)
-    } else {
-      setPwError(true)
-    }
+    setLoginLoading(true)
+    setLoginError('')
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) setLoginError('Incorrect email or password.')
+    setLoginLoading(false)
   }
 
-const fetchPending = async () => {
+  const logout = async () => {
+    await supabase.auth.signOut()
+    setSession(null)
+    setBazaars([])
+  }
+
+  const fetchPending = async () => {
     setLoading(true)
     const { data } = await supabase
       .from('bazaars')
@@ -42,10 +63,6 @@ const fetchPending = async () => {
     setBazaars(data || [])
     setLoading(false)
   }
-
-  useEffect(() => {
-    if (authed) fetchPending()
-  }, [authed])
 
   const approve = async (id) => {
     setActionLoading(id + '_approve')
@@ -70,30 +87,38 @@ const fetchPending = async () => {
   }
 
   // Login screen
-  if (!authed) {
+  if (!session) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 w-full max-w-sm">
           <div className="text-center mb-6">
             <div className="text-3xl mb-2">🔐</div>
             <h1 className="font-display text-xl font-bold text-gray-900">Admin Panel</h1>
-            <p className="text-gray-400 text-sm mt-1">Enter password to continue</p>
+            <p className="text-gray-400 text-sm mt-1">Sign in to continue</p>
           </div>
           <form onSubmit={login} className="space-y-4">
             <input
-              type="password"
-              value={password}
-              onChange={e => { setPassword(e.target.value); setPwError(false) }}
-              placeholder="Password"
+              type="email"
+              value={email}
+              onChange={e => { setEmail(e.target.value); setLoginError('') }}
+              placeholder="Email"
               className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest"
               autoFocus
             />
-            {pwError && <p className="text-red-500 text-xs">Incorrect password.</p>}
+            <input
+              type="password"
+              value={password}
+              onChange={e => { setPassword(e.target.value); setLoginError('') }}
+              placeholder="Password"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest"
+            />
+            {loginError && <p className="text-red-500 text-xs">{loginError}</p>}
             <button
               type="submit"
-              className="w-full bg-forest text-white rounded-lg py-2.5 font-semibold text-sm hover:bg-green-800 transition"
+              disabled={loginLoading}
+              className="w-full bg-forest text-white rounded-lg py-2.5 font-semibold text-sm hover:bg-green-800 transition disabled:opacity-60"
             >
-              Log In
+              {loginLoading ? 'Signing in...' : 'Log In'}
             </button>
           </form>
         </div>
@@ -117,7 +142,7 @@ const fetchPending = async () => {
             🔄 Refresh
           </button>
           <button
-            onClick={() => { sessionStorage.removeItem('admin_authed'); setAuthed(false) }}
+            onClick={logout}
             className="text-sm text-gray-500 font-medium px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
           >
             Log Out
@@ -168,8 +193,8 @@ const fetchPending = async () => {
               {/* Map check link */}
               {b.lat && b.lng && (
                 <div className="px-5 pb-3">
-                  
-                    <a href={`https://www.google.com/maps?q=${b.lat},${b.lng}`}
+                  <a
+                    href={`https://www.google.com/maps?q=${b.lat},${b.lng}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-forest hover:underline"
