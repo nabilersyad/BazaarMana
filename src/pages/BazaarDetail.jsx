@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import FeedbackForm from '../components/FeedbackForm'
 import TransitInfo from '../components/TransitInfo'
 
 
@@ -123,6 +124,7 @@ export default function BazaarDetail() {
   const [vendors, setVendors] = useState([])
   const [loading, setLoading] = useState(true)
   const [showReviewForm, setShowReviewForm] = useState(false)
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false)
 
   const fetchData = async () => {
     const [{ data: b }, { data: r }, { data: v }] = await Promise.all([
@@ -312,7 +314,33 @@ export default function BazaarDetail() {
           </div>
         )}
       </div>
+        {/* Feedback */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mt-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display font-bold text-lg">Report an Issue</h2>
+          <button
+            onClick={() => setShowFeedbackForm(!showFeedbackForm)}
+            className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            {showFeedbackForm ? 'Cancel' : '⚑ Report'}
+          </button>
+        </div>
 
+        {showFeedbackForm && (
+          <FeedbackForm
+            bazaarId={id}
+            onSuccess={() => {
+              setShowFeedbackForm(false)
+            }}
+          />
+        )}
+
+        {!showFeedbackForm && (
+          <p className="text-xs text-gray-400">
+            Something wrong with this listing? Let us know and we'll fix it.
+          </p>
+        )}
+      </div>
     </div>
   )
 }
