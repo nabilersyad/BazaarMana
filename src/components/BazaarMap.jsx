@@ -1,5 +1,5 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
-import { useEffect } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON } from 'react-leaflet'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import L from 'leaflet'
 
@@ -10,6 +10,7 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
   //shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 })
+
 
 const greenIcon = new L.Icon({
   iconUrl: '/icons/MapIconGreen.png',
@@ -60,6 +61,14 @@ function FlyToSelected({ selected }) {
 export default function BazaarMap({ bazaars, unverified = [], selected, onSelect }) {
   const center = [3.1478, 101.6953] // KL centre
 
+  const [boundaries, setBoundaries] = useState(null)
+
+  useEffect(() => {
+  fetch('/boundaries.geojson')
+    .then(r => r.json())
+    .then(data => setBoundaries(data))
+}, [])
+
   return (
     <MapContainer
       center={center}
@@ -77,6 +86,26 @@ export default function BazaarMap({ bazaars, unverified = [], selected, onSelect
         //url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
         //url="https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
       />
+
+      {boundaries && (
+        <GeoJSON
+          data={boundaries}
+          style={feature => ({
+            color: feature.properties.color,
+            weight: 2,
+            opacity: 0.7,
+            fillColor: feature.properties.color,
+            fillOpacity: 0.05,
+          })}
+          /*onEachFeature={(feature, layer) => {
+            layer.bindTooltip(feature.properties.label, {
+              permanent: false,
+              direction: 'center',
+              className: 'text-xs font-semibold',
+            })
+          }}*/
+        />
+      )}
 
       <FlyToSelected selected={selected} />
 
@@ -115,20 +144,34 @@ export default function BazaarMap({ bazaars, unverified = [], selected, onSelect
         <Marker
           key={bazaar.id}
           position={[bazaar.lat, bazaar.lng]}
-          icon={greyIcon}
+          icon={selected?.id === bazaar.id ? goldIcon : greyIcon}
+          eventHandlers={{ click: () => onSelect(bazaar) }}
         >
-          <Popup maxWidth={220}>
-            <div className="py-1">
-              <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-xs bg-orange-50 text-orange-500 border border-orange-200 rounded-full px-2 py-0.5 font-medium">
-                  ⚑ Unverified
-                </span>
-              </div>
-              <p className="font-semibold text-sm text-gray-900 mb-1 leading-snug">{bazaar.name}</p>
-              <p className="text-xs text-gray-500 mb-2 leading-relaxed">{bazaar.address}</p>
-              <p className="text-xs text-gray-400 italic">Details pending verification</p>
+        <Popup maxWidth={220}>
+          <div className="py-1">
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="text-xs bg-orange-50 text-orange-500 border border-orange-200 rounded-full px-2 py-0.5 font-medium">
+                ⚑ Unverified
+              </span>
             </div>
-          </Popup>
+            <p className="font-semibold text-sm text-gray-900 mb-1 leading-snug">{bazaar.name}</p>
+            <p className="text-xs text-gray-500 mb-2 leading-relaxed">{bazaar.address}</p>
+            {bazaar.opening_time && (
+              <p className="text-xs text-gray-600 mb-2">
+                🕐 {formatTime(bazaar.opening_time)} – {formatTime(bazaar.closing_time)}
+              </p>
+            )}
+            {bazaar.stall_count && (
+              <p className="text-xs text-gray-600 mb-2">🛒 {bazaar.stall_count} stalls</p>
+            )}
+          <Link
+            to={`/bazaar/${bazaar.id}`}
+            className="leaflet-link-btn inline-block text-xs bg-orange-500 text-white rounded-lg px-3 py-1.5 font-medium hover:bg-orange-600 transition-colors"
+          >
+            View details →
+          </Link>
+          </div>
+        </Popup>
         </Marker>
       ))}
 
