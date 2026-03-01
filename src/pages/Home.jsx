@@ -10,20 +10,48 @@ export default function Home() {
   const [selected, setSelected] = useState(null)
   const [loading, setLoading] = useState(true)
   const [mobileView, setMobileView] = useState('map') // 'map' or 'list'
+  const [unverified, setUnverified] = useState([])
 
   useEffect(() => {
     async function fetchBazaars() {
-      const { data, error } = await supabase
-        .from('bazaars')
-        .select('*')
-        .eq('is_active', true)
-        .eq('is_verified', true)
-        .order('name')
+      // Run both queries simultaneously instead of one after the other
+      // Promise.all waits for both to finish before continuing
+      const [
+        { data: verified, error: verifiedError },
+        { data: unverified, error: unverifiedError }
+      ] = await Promise.all([
 
-      if (!error && data) {
-        setBazaars(data)
-        setFiltered(data)
+        // Query 1: fetch verified bazaars for the main map pins
+        supabase
+          .from('bazaars')
+          .select('*')
+          .eq('is_active', true)
+          .eq('is_verified', true)
+          .order('name'),
+
+        // Query 2: fetch unverified bazaars for the grey "pending" pins
+        supabase
+          .from('bazaars')
+          .select('*')
+          .eq('is_active', true)
+          .eq('is_verified', false)
+          .order('name'),
+
+      ])
+
+      if (!verifiedError && verified) {
+        setBazaars(verified)      // full verified list, 
       }
+
+      if (!unverifiedError && unverified) {
+        setUnverified(unverified) // unverified list, passed directly to map
+      }
+
+       // Combine both for the list, verified first
+      if (!verifiedError && !unverifiedError) {
+        setFiltered([...(verified || []), ...(unverified || [])])
+      }
+
       setLoading(false)
     }
     fetchBazaars()
@@ -52,7 +80,7 @@ export default function Home() {
       <div className="bg-forest text-white py-3 px-4 text-center shrink-0">
         <h1 className="font-display text-lg font-bold">Ramadan Bazaars 2026</h1>
         <p className="text-green-200 text-xs mt-0.5">
-          Kuala Lumpur — {bazaars.length} verified bazaars
+          Kuala Lumpur & Selangor — {bazaars.length} verified · {unverified.length} pending
         </p>
       </div>
 
@@ -82,7 +110,7 @@ export default function Home() {
           bg-cream overflow-y-auto px-3 py-3
           ${mobileView === 'map' ? 'hidden md:flex' : 'flex'}
         `}>
-          <SearchFilter bazaars={bazaars} onFilter={setFiltered} />
+          <SearchFilter bazaars={[...bazaars, ...unverified]} onFilter={setFiltered} />
           <BazaarList bazaars={filtered} selected={selected} onSelect={handleSelect} />
         </div>
 
@@ -92,7 +120,8 @@ export default function Home() {
           ${mobileView === 'list' ? 'hidden md:block' : 'block'}
         `}>
           <BazaarMap
-            bazaars={filtered}
+            bazaars={filtered.filter(b => b.is_verified)}
+            unverified={filtered.filter(b => !b.is_verified)}
             selected={selected}
             onSelect={handleSelect}
           />

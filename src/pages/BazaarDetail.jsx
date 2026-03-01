@@ -181,9 +181,13 @@ export default function BazaarDetail() {
         <div className="bg-forest px-5 py-5">
           <div className="flex items-start justify-between gap-2">
             <h1 className="font-display text-xl font-bold text-white leading-snug">{bazaar.name}</h1>
-            {bazaar.is_verified && (
+            {bazaar.is_verified ? (
               <span className="shrink-0 text-xs bg-green-700 text-green-100 border border-green-600 rounded-full px-2 py-0.5">
                 ✓ Verified
+              </span>
+            ) : (
+              <span className="shrink-0 text-xs bg-orange-500 text-orange-100 border border-orange-400 rounded-full px-2 py-0.5">
+                ⚑ Unverified
               </span>
             )}
           </div>

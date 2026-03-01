@@ -11,6 +11,130 @@ function Meta({ label, value }) {
   )
 }
 
+const inputClass = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-forest"
+
+function EditForm({ bazaar, onSave, onCancel }) {
+  const [form, setForm] = useState({
+    name: bazaar.name || '',
+    address: bazaar.address || '',
+    area: bazaar.area || '',
+    parliament: bazaar.parliament || '',
+    state: bazaar.state || '',
+    lat: bazaar.lat || '',
+    lng: bazaar.lng || '',
+    opening_time: bazaar.opening_time || '',
+    closing_time: bazaar.closing_time || '',
+    stall_count: bazaar.stall_count || '',
+    organiser: bazaar.organiser || '',
+  })
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
+
+  const set = (key, value) => setForm(f => ({ ...f, [key]: value }))
+
+  const handleSave = async () => {
+    setSaving(true)
+    setError(null)
+    const { error } = await supabase
+      .from('bazaars')
+      .update({
+        name: form.name,
+        address: form.address,
+        area: form.area,
+        parliament: form.parliament || null,
+        state: form.state,
+        lat: parseFloat(form.lat),
+        lng: parseFloat(form.lng),
+        opening_time: form.opening_time || null,
+        closing_time: form.closing_time || null,
+        stall_count: form.stall_count ? parseInt(form.stall_count) : null,
+        organiser: form.organiser || null,
+      })
+      .eq('id', bazaar.id)
+    setSaving(false)
+    if (error) {
+      setError('Failed to save. Please try again.')
+    } else {
+      onSave()
+    }
+  }
+
+  return (
+    <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 space-y-3">
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Edit Details</p>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="col-span-2">
+          <label className="text-xs text-gray-400 mb-1 block">Name</label>
+          <input type="text" value={form.name} onChange={e => set('name', e.target.value)} className={inputClass} />
+        </div>
+        <div className="col-span-2">
+          <label className="text-xs text-gray-400 mb-1 block">Address</label>
+          <textarea value={form.address} onChange={e => set('address', e.target.value)} rows={2} className={`${inputClass} resize-none`} />
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">Neighbourhood</label>
+          <input type="text" value={form.area} onChange={e => set('area', e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">Area (Parliament)</label>
+          <input type="text" value={form.parliament} onChange={e => set('parliament', e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">State</label>
+          <select value={form.state} onChange={e => set('state', e.target.value)} className={inputClass}>
+            <option>Kuala Lumpur</option>
+            <option>Selangor</option>
+            <option>Putrajaya</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">Organiser</label>
+          <input type="text" value={form.organiser} onChange={e => set('organiser', e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">Latitude</label>
+          <input type="number" step="any" value={form.lat} onChange={e => set('lat', e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">Longitude</label>
+          <input type="number" step="any" value={form.lng} onChange={e => set('lng', e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">Opening Time</label>
+          <input type="time" value={form.opening_time} onChange={e => set('opening_time', e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">Closing Time</label>
+          <input type="time" value={form.closing_time} onChange={e => set('closing_time', e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 mb-1 block">Stall Count</label>
+          <input type="number" value={form.stall_count} onChange={e => set('stall_count', e.target.value)} className={inputClass} />
+        </div>
+      </div>
+
+      {error && <p className="text-red-500 text-xs">{error}</p>}
+
+      <div className="flex gap-2 pt-1">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex-1 bg-forest text-white text-sm font-semibold rounded-lg py-2 hover:bg-green-800 transition disabled:opacity-60"
+        >
+          {saving ? 'Saving...' : '💾 Save Changes'}
+        </button>
+        <button
+          onClick={onCancel}
+          className="flex-1 bg-gray-100 text-gray-600 text-sm font-semibold rounded-lg py-2 hover:bg-gray-200 transition"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function Admin() {
   const [session, setSession] = useState(null)
   const [email, setEmail] = useState('')
@@ -22,8 +146,8 @@ export default function Admin() {
   const [actionLoading, setActionLoading] = useState(null)
   const [feedback, setFeedback] = useState([])
   const [activeTab, setActiveTab] = useState('submissions')
+  const [editingId, setEditingId] = useState(null)
 
-  // Check for existing session on mount
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
@@ -34,7 +158,6 @@ export default function Admin() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Fetch pending bazaars when session is available
   useEffect(() => {
     if (session) {
       fetchPending()
@@ -69,6 +192,15 @@ export default function Admin() {
     setLoading(false)
   }
 
+  const fetchFeedback = async () => {
+    const { data } = await supabase
+      .from('feedback')
+      .select('*, bazaars(name)')
+      .order('created_at', { ascending: false })
+      .limit(20)
+    setFeedback(data || [])
+  }
+
   const approve = async (id) => {
     setActionLoading(id + '_approve')
     await supabase.from('bazaars').update({ is_verified: true }).eq('id', id)
@@ -90,15 +222,6 @@ export default function Admin() {
     setActionLoading(null)
     fetchPending()
   }
-
-  const fetchFeedback = async () => {
-    const { data } = await supabase
-      .from('feedback')
-      .select('*, bazaars(name)')
-      .order('created_at', { ascending: false })
-      .limit(20)
-    setFeedback(data || [])
-}
 
   // Login screen
   if (!session) {
@@ -148,7 +271,7 @@ export default function Admin() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-sm text-gray-400 mt-0.5">Pending bazaar submissions</p>
+          <p className="text-sm text-gray-400 mt-0.5">BazaarMana</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -170,7 +293,7 @@ export default function Admin() {
       <div className="flex border-b border-gray-200 mb-6">
         {[
           { key: 'submissions', label: `Submissions ${bazaars.length > 0 ? `(${bazaars.length})` : ''}` },
-          { key: 'feedback', label: `Feedback ${feedback.length > 0 ? `(${feedback.length})` : ''}` },          
+          { key: 'feedback', label: `Feedback ${feedback.length > 0 ? `(${feedback.length})` : ''}` },
         ].map(tab => (
           <button
             key={tab.key}
@@ -185,7 +308,7 @@ export default function Admin() {
           </button>
         ))}
       </div>
-      
+
       {/* Submissions tab */}
       {activeTab === 'submissions' && (
         <>
@@ -202,6 +325,7 @@ export default function Admin() {
               {bazaars.map(b => (
                 <div key={b.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 
+                  {/* Header */}
                   <div className="px-5 py-4 border-b border-gray-50 flex items-start justify-between gap-3">
                     <div>
                       <h3 className="font-semibold text-gray-900">{b.name}</h3>
@@ -212,6 +336,7 @@ export default function Admin() {
                     </span>
                   </div>
 
+                  {/* Details grid */}
                   <div className="px-5 py-4 grid grid-cols-2 gap-x-6 gap-y-3">
                     <Meta label="Neighbourhood" value={b.area} />
                     <Meta label="State" value={b.state} />
@@ -227,6 +352,7 @@ export default function Admin() {
                     />
                   </div>
 
+                  {/* Map check link */}
                   {b.lat && b.lng && (
                     <div className="px-5 pb-3">
                       
@@ -240,6 +366,16 @@ export default function Admin() {
                     </div>
                   )}
 
+                  {/* Inline edit form */}
+                  {editingId === b.id && (
+                    <EditForm
+                      bazaar={b}
+                      onSave={() => { setEditingId(null); fetchPending() }}
+                      onCancel={() => setEditingId(null)}
+                    />
+                  )}
+
+                  {/* Actions */}
                   <div className="px-5 pb-5 pt-3 border-t border-gray-50 flex gap-2">
                     <button
                       onClick={() => approve(b.id)}
@@ -254,6 +390,12 @@ export default function Admin() {
                       className="flex-1 bg-gray-100 text-gray-600 text-sm font-semibold rounded-lg py-2 hover:bg-gray-200 transition disabled:opacity-60"
                     >
                       {actionLoading === b.id + '_reject' ? '...' : '✕ Reject'}
+                    </button>
+                    <button
+                      onClick={() => setEditingId(editingId === b.id ? null : b.id)}
+                      className="bg-blue-50 text-blue-500 text-sm font-semibold rounded-lg px-3 py-2 hover:bg-blue-100 transition"
+                    >
+                      ✏️
                     </button>
                     <button
                       onClick={() => remove(b.id)}
