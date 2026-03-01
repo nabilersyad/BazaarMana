@@ -24,9 +24,13 @@ export default function BazaarCard({ bazaar, isSelected, onClick }) {
         {/* Name + verified badge */}
         <div className="flex items-start justify-between gap-2 mb-1">
           <h3 className="font-semibold text-gray-900 text-s leading-snug">{bazaar.name}</h3>
-          {bazaar.is_verified && (
+          {bazaar.is_verified ? (
             <span className="shrink-0 text-[10px] bg-green-50 text-forest border border-green-200 rounded-full px-2 py-0.5 font-medium">
               ✓ Verified
+            </span>
+          ) : (
+            <span className="shrink-0 text-[10px] bg-orange-50 text-orange-500 border border-orange-200 rounded-full px-2 py-0.5 font-medium">
+              ⚑ Unverified
             </span>
           )}
         </div>
