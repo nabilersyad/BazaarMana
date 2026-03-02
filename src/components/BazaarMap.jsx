@@ -13,7 +13,7 @@ L.Icon.Default.mergeOptions({
 
 
 const greenIcon = new L.Icon({
-  iconUrl: '/icons/MapIconGreen.png',
+  iconUrl: '/icons/MapIconBrightGreen.png',
   //shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
   iconSize: [40, 40],
   iconAnchor: [20, 40],
@@ -22,7 +22,7 @@ const greenIcon = new L.Icon({
 })
 
 const goldIcon = new L.Icon({
-  iconUrl: '/icons/MapIconGold.png',
+  iconUrl: '/icons/MapIconBrightGold.png',
   //shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
   iconSize: [40, 40],
   iconAnchor: [20, 40],
@@ -31,7 +31,7 @@ const goldIcon = new L.Icon({
 })
 
 const greyIcon = new L.Icon({
-  iconUrl: '/icons/MapIconGrey.png',
+  iconUrl: '/icons/MapIconBrightOrange.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
   iconSize: [40, 40],
   iconAnchor: [20, 40],
