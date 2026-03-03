@@ -12,7 +12,7 @@ export default function TransitInfo({ lat, lng }) {
 
   useEffect(() => {
     async function fetchStations() {
-      const { data, error } = await transitSupabase.rpc('get_nearby_stations', {
+      const { data, error } = await transitSupabase.rpc('get_nearby_stations_v2', {
         point_lat: lat,
         point_lng: lng,
       })
@@ -49,6 +49,8 @@ export default function TransitInfo({ lat, lng }) {
     return acc
   }, {})
 
+
+  
   return (
     <div className="space-y-4">
       {Object.entries(grouped).map(([routeName, stops]) => (
