@@ -9,47 +9,19 @@ export default function Home() {
   const [filtered, setFiltered] = useState([])
   const [selected, setSelected] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [mobileView, setMobileView] = useState('map') // 'map' or 'list'
-  const [unverified, setUnverified] = useState([])
+  const [mobileView, setMobileView] = useState('map')
 
   useEffect(() => {
     async function fetchBazaars() {
-      // Run both queries simultaneously instead of one after the other
-      // Promise.all waits for both to finish before continuing
-      const [
-        { data: verified, error: verifiedError },
-        { data: unverified, error: unverifiedError }
-      ] = await Promise.all([
+      const { data, error } = await supabase
+        .from('bazaars')
+        .select('*')
+        .eq('is_active', true)
+        .order('name')
 
-        // Query 1: fetch verified bazaars for the main map pins
-        supabase
-          .from('bazaars')
-          .select('*')
-          .eq('is_active', true)
-          .eq('is_verified', true)
-          .order('name'),
-
-        // Query 2: fetch unverified bazaars for the grey "pending" pins
-        supabase
-          .from('bazaars')
-          .select('*')
-          .eq('is_active', true)
-          .eq('is_verified', false)
-          .order('name'),
-
-      ])
-
-      if (!verifiedError && verified) {
-        setBazaars(verified)      // full verified list, 
-      }
-
-      if (!unverifiedError && unverified) {
-        setUnverified(unverified) // unverified list, passed directly to map
-      }
-
-       // Combine both for the list, verified first
-      if (!verifiedError && !unverifiedError) {
-        setFiltered([...(verified || []), ...(unverified || [])])
+      if (!error && data) {
+        setBazaars(data)
+        setFiltered(data)
       }
 
       setLoading(false)
@@ -66,7 +38,6 @@ export default function Home() {
       <div className="flex items-center justify-center h-[80vh]">
         <div className="text-center">
           <img src="/BazaarManaLogo.svg" alt="BazaarMana" className="h-12 w-12 mx-auto mb-3 animate-pulse" />
-          {/*<div className="text-4xl mb-3 animate-pulse">☽</div>*/}
           <p className="text-sm text-gray-400">Loading bazaars...</p>
         </div>
       </div>
@@ -80,7 +51,7 @@ export default function Home() {
       <div className="bg-forest text-white py-3 px-4 text-center shrink-0">
         <h1 className="font-display text-lg font-bold">Ramadan Bazaars 2026</h1>
         <p className="text-green-200 text-xs mt-0.5">
-          Kuala Lumpur & Selangor — {bazaars.length} verified · {unverified.length} pending
+          Kuala Lumpur & Selangor — {bazaars.length} bazaars
         </p>
       </div>
 
@@ -110,7 +81,7 @@ export default function Home() {
           bg-cream overflow-y-auto px-3 py-3
           ${mobileView === 'map' ? 'hidden md:flex' : 'flex'}
         `}>
-          <SearchFilter bazaars={[...bazaars, ...unverified]} onFilter={setFiltered} />
+          <SearchFilter bazaars={bazaars} onFilter={setFiltered} />
           <BazaarList bazaars={filtered} selected={selected} onSelect={handleSelect} />
         </div>
 
